@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Job Search Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b0d14;
+    --bg-2: #11141d;
+    --card: #161a26;
+    --card-hover: #1b2030;
+    --border: #262c3d;
+    --text: #e8eaf0;
+    --text-dim: #9aa1b5;
+    --text-faint: #656d84;
+    --accent: #7c8cff;
+    --accent-2: #a78bfa;
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.12);
+    --lime: #a3e635;
+    --lime-bg: rgba(163,230,53,0.12);
+    --yellow: #fbbf24;
+    --yellow-bg: rgba(251,191,36,0.12);
+    --gray: #9ca3af;
+    --gray-bg: rgba(156,163,175,0.12);
+    --red: #f87171;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(124,140,255,0.12), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(167,139,250,0.10), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  a{color: var(--accent); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  .topbar{
+    position: sticky; top:0; z-index: 20;
+    backdrop-filter: blur(14px);
+    background: rgba(11,13,20,0.75);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner{
+    max-width: 1200px; margin: 0 auto; padding: 18px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap: wrap;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-badge{
+    width:38px;height:38px;border-radius:11px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:16px; color:#0b0d14;
+    box-shadow: 0 4px 14px rgba(124,140,255,0.4);
+  }
+  .brand h1{font-size:18px; font-weight:700; margin:0;}
+  .brand .sub{font-size:12.5px; color:var(--text-dim); margin-top:1px;}
+
+  .stats{display:flex; gap:10px; flex-wrap:wrap;}
+  .stat{
+    background: var(--card); border:1px solid var(--border); border-radius: 12px;
+    padding: 8px 14px; text-align:center; min-width: 78px;
+  }
+  .stat .num{font-size:18px; font-weight:800; line-height:1.1;}
+  .stat .lbl{font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
+
+  .icon-btn{
+    background: var(--card); border:1px solid var(--border); color:var(--text);
+    width:38px;height:38px;border-radius:11px; display:flex;align-items:center;justify-content:center;
+    cursor:pointer; transition: all .15s ease;
+  }
+  .icon-btn:hover{background: var(--card-hover); border-color:var(--accent);}
+
+  .container{max-width:1200px; margin: 0 auto; padding: 22px 24px;}
+
+  .controls{
+    display:flex; gap:12px; flex-wrap:wrap; align-items:center;
+    background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 20px;
+  }
+  .search-wrap{position:relative; flex: 1 1 220px; min-width:180px;}
+  .search-wrap input{
+    width:100%; padding:9px 12px 9px 34px; border-radius:10px; border:1px solid var(--border);
+    background: var(--bg-2); color:var(--text); font-size:14px; font-family:inherit;
+  }
+  .search-wrap svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.5;}
+  select{
+    padding:9px 10px; border-radius:10px; border:1px solid var(--border);
+    background: var(--bg-2); color:var(--text); font-size:13.5px; font-family:inherit; cursor:pointer;
+  }
+  .chip-group{display:flex; gap:6px; flex-wrap:wrap;}
+  .chip{
+    padding:7px 13px; border-radius:999px; border:1px solid var(--border); background:var(--bg-2);
+    font-size:12.5px; font-weight:600; cursor:pointer; color:var(--text-dim); transition: all .15s ease;
+    user-select:none;
+  }
+  .chip.active{color:#0b0d14; border-color:transparent;}
+  .chip[data-fit="5"].active{background:var(--green); }
+  .chip[data-fit="4"].active{background:var(--lime); }
+  .chip[data-fit="3"].active{background:var(--yellow);}
+  .chip[data-fit="2"].active{background:var(--gray);}
+  .chip:not(.active):hover{border-color:var(--accent);}
+
+  .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); gap:16px;}
+
+  .card{
+    background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
+    padding:18px; display:flex; flex-direction:column; gap:10px;
+    box-shadow: var(--shadow); transition: transform .15s ease, border-color .15s ease;
+    position:relative; overflow:hidden;
+  }
+  .card:hover{border-color: rgba(124,140,255,0.4);}
+  .card.applied{border-color: rgba(52,211,153,0.45);}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .fit-badge{
+    flex-shrink:0; width:40px;height:40px;border-radius:11px; display:flex;align-items:center;justify-content:center;
+    font-weight:800; font-size:17px; color:#0b0d14;
+  }
+  .fit-badge[data-fit="5"]{background:var(--green);}
+  .fit-badge[data-fit="4"]{background:var(--lime);}
+  .fit-badge[data-fit="3"]{background:var(--yellow);}
+  .fit-badge[data-fit="2"]{background:var(--gray);}
+
+  .titles{flex:1; min-width:0;}
+  .job-title{font-size:15.5px; font-weight:700; line-height:1.3; margin:0 0 2px 0;}
+  .job-company{font-size:13.5px; color:var(--text-dim); font-weight:500;}
+
+  .badges{display:flex; gap:6px; flex-wrap:wrap;}
+  .badge{
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+    padding:3px 8px; border-radius:6px;
+  }
+  .badge.new{background: rgba(124,140,255,0.18); color: var(--accent);}
+  .badge.applied{background: var(--green-bg); color: var(--green);}
+  .badge.status-New{background: rgba(124,140,255,0.12); color: var(--text-dim);}
+  .badge.status-Interviewing{background: var(--yellow-bg); color: var(--yellow);}
+  .badge.status-Rejected{background: rgba(248,113,113,0.14); color: var(--red);}
+  .badge.status-notfit{background: var(--gray-bg); color: var(--gray);}
+
+  .meta-line{font-size:12.5px; color:var(--text-dim); display:flex; flex-wrap:wrap; gap:6px 10px;}
+  .meta-line span{display:inline-flex; align-items:center; gap:4px;}
+
+  .fit-notes{
+    font-size:12.8px; color:var(--text-dim); line-height:1.5; max-height:4.6em; overflow:hidden; position:relative;
+  }
+  .fit-notes.expanded{max-height:none;}
+  .fit-notes-toggle{font-size:11.5px; color:var(--accent); cursor:pointer; font-weight:600; margin-top:-4px;}
+
+  .card-actions{display:flex; gap:8px; margin-top:4px; flex-wrap:wrap;}
+  .btn{
+    font-family:inherit; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:9px;
+    border:1px solid var(--border); background:var(--bg-2); color:var(--text); cursor:pointer;
+    transition: all .15s ease; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn:hover{border-color:var(--accent); color:var(--accent);}
+  .btn.primary{background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent; color:#0b0d14;}
+  .btn.primary:hover{filter:brightness(1.08); color:#0b0d14;}
+  .btn.applied-btn.on{background: var(--green-bg); border-color: rgba(52,211,153,0.4); color:var(--green);}
+
+  .comment-box{margin-top:2px;}
+  textarea{
+    width:100%; min-height:56px; resize:vertical; padding:9px 10px; border-radius:9px;
+    border:1px solid var(--border); background:var(--bg-2); color:var(--text); font-family:inherit; font-size:12.8px;
+  }
+  .comment-save-row{display:flex; justify-content:flex-end; margin-top:6px; gap:8px; align-items:center;}
+  .save-hint{font-size:11px; color:var(--text-faint);}
+
+  .empty-state{text-align:center; padding:60px 20px; color:var(--text-dim);}
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background: var(--bg-2); border:1px solid var(--border); border-radius:16px; padding:24px;
+    max-width:440px; width:100%; box-shadow: var(--shadow);
+  }
+  .modal h2{margin:0 0 6px 0; font-size:16px;}
+  .modal p{font-size:12.8px; color:var(--text-dim); margin:0 0 16px 0; line-height:1.5;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:12px; font-weight:600; margin-bottom:5px; color:var(--text-dim);}
+  .field input{
+    width:100%; padding:9px 11px; border-radius:9px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); font-family:inherit; font-size:13px;
+  }
+  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:18px;}
+  .status-msg{font-size:12px; margin-top:10px; min-height:16px;}
+  .status-msg.ok{color:var(--green);}
+  .status-msg.err{color:var(--red);}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background: var(--card); border:1px solid var(--border); color:var(--text);
+    padding:12px 20px; border-radius:11px; font-size:13px; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition: all .25s ease; z-index:200;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-badge">JS</div>
+      <div>
+        <h1>Job Search Dashboard</h1>
+        <div class="sub" id="lastUpdated">Loading…</div>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="icon-btn" id="settingsBtn" title="Settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="searchInput" placeholder="Search title, company, notes…" />
+    </div>
+    <div class="chip-group" id="fitChips">
+      <div class="chip" data-fit="5">5</div>
+      <div class="chip" data-fit="4">4</div>
+      <div class="chip" data-fit="3">3</div>
+      <div class="chip" data-fit="2">2</div>
+    </div>
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="New">New</option>
+      <option value="Applied">Applied</option>
+      <option value="Interviewing">Interviewing</option>
+      <option value="Rejected">Rejected</option>
+      <option value="Not a fit (ignore)">Not a fit</option>
+    </select>
+    <select id="workTypeFilter">
+      <option value="">All work types</option>
+      <option value="Remote">Remote</option>
+      <option value="Hybrid">Hybrid</option>
+      <option value="On-site">On-site</option>
+    </select>
+    <select id="sortSelect">
+      <option value="fit-desc">Fit Score ↓</option>
+      <option value="date-desc">Date Found ↓</option>
+      <option value="date-asc">Date Found ↑</option>
+      <option value="company-asc">Company A–Z</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);cursor:pointer;">
+      <input type="checkbox" id="hideNotFit" style="cursor:pointer;" /> Hide "not a fit"
+    </label>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">No jobs match your filters.</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h2>Dashboard Settings</h2>
+    <p>To save "Applied" toggles and comments back to GitHub, paste a personal access token (fine-grained, with <strong>Contents: Read and write</strong> scope on this repo). It's stored only in this browser's local storage — never sent anywhere except GitHub's API.</p>
+    <div class="field">
+      <label>GitHub owner / org</label>
+      <input type="text" id="cfgOwner" placeholder="e.g. mattclark" />
+    </div>
+    <div class="field">
+      <label>Repository name</label>
+      <input type="text" id="cfgRepo" placeholder="e.g. job-search-dashboard" />
+    </div>
+    <div class="field">
+      <label>Branch</label>
+      <input type="text" id="cfgBranch" placeholder="main" />
+    </div>
+    <div class="field">
+      <label>Data file path</label>
+      <input type="text" id="cfgPath" placeholder="data/jobs.json" />
+    </div>
+    <div class="field">
+      <label>Personal access token</label>
+      <input type="password" id="cfgToken" placeholder="github_pat_..." />
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelSettings">Cancel</button>
+      <button class="btn primary" id="saveSettings">Save</button>
+    </div>
+    <div class="status-msg" id="settingsMsg"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const DEFAULTS = { owner:'', repo:'', branch:'main', path:'data/jobs.json' };
+  const LS_KEY = 'jobDashboardConfig';
+
+  function loadConfig(){
+    try{ return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(LS_KEY) || '{}')); }
+    catch(e){ return Object.assign({}, DEFAULTS); }
+  }
+  function saveConfig(cfg){ localStorage.setItem(LS_KEY, JSON.stringify(cfg)); }
+
+  let config = loadConfig();
+  let jobsData = null;   // full payload {lastUpdated, mostRecentBatchDate, jobs:[]}
+  let fileSha = null;    // current sha of jobs.json on GitHub (for safe writes)
+  let activeFits = new Set();
+
+  const el = (id) => document.getElementById(id);
+  const grid = el('grid');
+  const toastEl = el('toast');
+
+  function showToast(msg, ms=2600){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=> toastEl.classList.remove('show'), ms);
+  }
+
+  function fitColorClass(fit){ return String(fit); }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function statusClass(status){
+    if(!status) return 'status-New';
+    if(status.toLowerCase().includes('not a fit')) return 'status-notfit';
+    if(status === 'Interviewing') return 'status-Interviewing';
+    if(status === 'Rejected') return 'status-Rejected';
+    return 'status-New';
+  }
+
+  async function loadData(){
+    // Prefer GitHub (has latest writes + sha) if configured, else fall back to local file
+    if(config.owner && config.repo && config.token){
+      try{
+        const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`, {
+          headers:{ 'Authorization': `Bearer ${config.token}`, 'Accept':'application/vnd.github+json' }
+        });
+        if(res.ok){
+          const json = await res.json();
+          fileSha = json.sha;
+          const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
+          jobsData = JSON.parse(decoded);
+          render();
+          return;
+        }
+      }catch(e){ console.warn('GitHub load failed, falling back to local file', e); }
+    }
+    // fallback: relative fetch (works when hosted, read-only)
+    try{
+      const res = await fetch('./data/jobs.json', {cache:'no-store'});
+      jobsData = await res.json();
+    }catch(e){
+      jobsData = { lastUpdated: null, mostRecentBatchDate: null, jobs: [] };
+    }
+    render();
+  }
+
+  async function persist(successMsg){
+    if(!(config.owner && config.repo && config.token)){
+      showToast('Add a GitHub token in Settings to save changes.');
+      return false;
+    }
+    jobsData.lastUpdated = new Date().toISOString();
+    const body = {
+      message: `Update job dashboard data — ${new Date().toISOString()}`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(jobsData, null, 2)))),
+      branch: config.branch
+    };
+    if(fileSha) body.sha = fileSha;
+    try{
+      const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`, {
+        method:'PUT',
+        headers:{ 'Authorization': `Bearer ${config.token}`, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+        body: JSON.stringify(body)
+      });
+      const json = await res.json();
+      if(res.ok){
+        fileSha = json.content.sha;
+        showToast(successMsg || 'Saved.');
+        return true;
+      } else {
+        showToast('Save failed: ' + (json.message || res.status));
+        return false;
+      }
+    }catch(e){
+      showToast('Save failed: ' + e.message);
+      return false;
+    }
+  }
+
+  function computeStats(){
+    const jobs = jobsData.jobs || [];
+    const total = jobs.length;
+    const newCount = jobs.filter(j=>j.isNew).length;
+    const appliedCount = jobs.filter(j=>j.applied).length;
+    const avgFit = total ? (jobs.reduce((s,j)=>s+(Number(j.fitScore)||0),0)/total).toFixed(1) : '0';
+    el('stats').innerHTML = `
+      <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
+      <div class="stat"><div class="num">${newCount}</div><div class="lbl">New</div></div>
+      <div class="stat"><div class="num">${appliedCount}</div><div class="lbl">Applied</div></div>
+      <div class="stat"><div class="num">${avgFit}</div><div class="lbl">Avg Fit</div></div>
+    `;
+    el('lastUpdated').textContent = jobsData.lastUpdated
+      ? `Last updated ${new Date(jobsData.lastUpdated).toLocaleString()}`
+      : 'No data yet';
+  }
+
+  function getFiltered(){
+    let jobs = (jobsData.jobs || []).slice();
+    const q = el('searchInput').value.trim().toLowerCase();
+    const statusF = el('statusFilter').value;
+    const workF = el('workTypeFilter').value;
+    const hideNotFit = el('hideNotFit').checked;
+    const sort = el('sortSelect').value;
+
+    if(q){
+      jobs = jobs.filter(j =>
+        (j.title||'').toLowerCase().includes(q) ||
+        (j.company||'').toLowerCase().includes(q) ||
+        (j.fitNotes||'').toLowerCase().includes(q) ||
+        (j.comment||'').toLowerCase().includes(q)
+      );
+    }
+    if(activeFits.size){ jobs = jobs.filter(j => activeFits.has(String(j.fitScore))); }
+    if(statusF){ jobs = jobs.filter(j => (j.status||'') === statusF); }
+    if(workF){ jobs = jobs.filter(j => (j.workType||'') === workF); }
+    if(hideNotFit){ jobs = jobs.filter(j => !(j.status||'').toLowerCase().includes('not a fit')); }
+
+    jobs.sort((a,b)=>{
+      if(sort === 'fit-desc'){
+        const df = (Number(b.fitScore)||0) - (Number(a.fitScore)||0);
+        if(df !== 0) return df;
+        return (b.dateFound||'').localeCompare(a.dateFound||'');
+      }
+      if(sort === 'date-desc') return (b.dateFound||'').localeCompare(a.dateFound||'');
+      if(sort === 'date-asc') return (a.dateFound||'').localeCompare(b.dateFound||'');
+      if(sort === 'company-asc') return (a.company||'').localeCompare(b.company||'');
+      return 0;
+    });
+    return jobs;
+  }
+
+  function cardHtml(job){
+    const notesId = `notes-${job.id}`;
+    const statusLabel = (job.status||'New').replace(' (ignore)','');
+    return `
+    <div class="card ${job.applied ? 'applied' : ''}" data-id="${job.id}">
+      <div class="card-top">
+        <div class="fit-badge" data-fit="${job.fitScore}">${job.fitScore ?? '–'}</div>
+        <div class="titles">
+          <div class="job-title">${escapeHtml(job.title)}</div>
+          <div class="job-company">${escapeHtml(job.company)}</div>
+        </div>
+      </div>
+      <div class="badges">
+        ${job.isNew ? '<span class="badge new">New</span>' : ''}
+        ${job.applied ? '<span class="badge applied">Applied</span>' : ''}
+        <span class="badge ${statusClass(job.status)}">${escapeHtml(statusLabel)}</span>
+      </div>
+      <div class="meta-line">
+        <span>📍 ${escapeHtml(job.location||'—')}</span>
+        <span>💼 ${escapeHtml(job.workType||'—')}</span>
+        <span>💰 ${escapeHtml(job.salary||'Not listed')}</span>
+        <span>🔎 ${escapeHtml(job.source||'—')}</span>
+        <span>🗓 ${escapeHtml(job.dateFound||'—')}</span>
+      </div>
+      <div>
+        <div class="fit-notes" id="${notesId}">${escapeHtml(job.fitNotes||'')}</div>
+        <div class="fit-notes-toggle" data-target="${notesId}">Show more</div>
+      </div>
+      <div class="card-actions">
+        <a class="btn primary" href="${job.link||'#'}" target="_blank" rel="noopener">View Posting ↗</a>
+        <button class="btn applied-btn ${job.applied ? 'on' : ''}" data-action="toggle-applied">${job.applied ? '✓ Applied' : 'Mark Applied'}</button>
+      </div>
+      <div class="comment-box">
+        <textarea placeholder="Your notes on this one…" data-action="comment-input">${escapeHtml(job.comment||'')}</textarea>
+        <div class="comment-save-row">
+          <span class="save-hint" data-role="save-hint"></span>
+          <button class="btn" data-action="save-comment">Save note</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function render(){
+    computeStats();
+    const jobs = getFiltered();
+    el('emptyState').style.display = jobs.length ? 'none' : 'block';
+    grid.innerHTML = jobs.map(cardHtml).join('');
+  }
+
+  // Expand/collapse notes
+  grid.addEventListener('click', (e)=>{
+    if(e.target.classList.contains('fit-notes-toggle')){
+      const t = document.getElementById(e.target.dataset.target);
+      const expanded = t.classList.toggle('expanded');
+      e.target.textContent = expanded ? 'Show less' : 'Show more';
+    }
+    const card = e.target.closest('.card');
+    if(!card) return;
+    const id = card.dataset.id;
+    const job = (jobsData.jobs||[]).find(j=>j.id===id);
+    if(!job) return;
+
+    if(e.target.dataset.action === 'toggle-applied'){
+      job.applied = !job.applied;
+      job.appliedDate = job.applied ? new Date().toISOString().slice(0,10) : null;
+      if(job.applied && (job.status === 'New' || !job.status)) job.status = 'Applied';
+      render();
+      persist(job.applied ? `Marked applied: ${job.title}` : `Un-marked: ${job.title}`);
+    }
+    if(e.target.dataset.action === 'save-comment'){
+      const ta = card.querySelector('textarea[data-action="comment-input"]');
+      job.comment = ta.value;
+      persist(`Saved note on ${job.title}`);
+    }
+  });
+
+  el('searchInput').addEventListener('input', render);
+  el('statusFilter').addEventListener('change', render);
+  el('workTypeFilter').addEventListener('change', render);
+  el('sortSelect').addEventListener('change', render);
+  el('hideNotFit').addEventListener('change', render);
+
+  el('fitChips').addEventListener('click', (e)=>{
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    const fit = chip.dataset.fit;
+    if(activeFits.has(fit)){ activeFits.delete(fit); chip.classList.remove('active'); }
+    else{ activeFits.add(fit); chip.classList.add('active'); }
+    render();
+  });
+
+  // Settings modal
+  const modal = el('settingsModal');
+  function openModal(){
+    el('cfgOwner').value = config.owner || '';
+    el('cfgRepo').value = config.repo || '';
+    el('cfgBranch').value = config.branch || 'main';
+    el('cfgPath').value = config.path || 'data/jobs.json';
+    el('cfgToken').value = config.token || '';
+    el('settingsMsg').textContent = '';
+    el('settingsMsg').className = 'status-msg';
+    modal.classList.add('open');
+  }
+  function closeModal(){ modal.classList.remove('open'); }
+  el('settingsBtn').addEventListener('click', openModal);
+  el('cancelSettings').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+
+  el('saveSettings').addEventListener('click', async ()=>{
+    config = {
+      owner: el('cfgOwner').value.trim(),
+      repo: el('cfgRepo').value.trim(),
+      branch: el('cfgBranch').value.trim() || 'main',
+      path: el('cfgPath').value.trim() || 'data/jobs.json',
+      token: el('cfgToken').value.trim()
+    };
+    saveConfig(config);
+    el('settingsMsg').textContent = 'Saved. Reloading data…';
+    el('settingsMsg').className = 'status-msg ok';
+    await loadData();
+    setTimeout(closeModal, 600);
+  });
+
+  // init
+  if(!config.owner || !config.repo){
+    // first-run nudge
+    setTimeout(()=> showToast('Tip: click the gear icon to connect your GitHub repo for saving.'), 800);
+  }
+  loadData();
+})();
+</script>
+
+</body>
+</html>
