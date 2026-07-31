@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-31T00:45:20Z",
+  "lastUpdated": "2026-07-31T01:15:36Z",
   "mostRecentBatchDate": "2026-07-30",
   "jobs": [
     {
@@ -18,7 +18,10 @@
       "isNew": true,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": true,
+      "queuedDate": "2026-07-31",
+      "resumeUrl": "https://drive.google.com/file/d/1_Lg0Ry1EZsGhnbm8rSxaWkThxU_uI4SK/view?usp=drivesdk"
     },
     {
       "id": "3a32bd2a609a",
@@ -36,7 +39,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "b40920de9cb3",
@@ -54,7 +60,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "1abd0680d0d7",
@@ -72,7 +81,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "8eb5b5d298c4",
@@ -90,7 +102,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "74bf1b8e0984",
@@ -108,7 +123,10 @@
       "isNew": true,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "76fb61616f90",
@@ -126,7 +144,10 @@
       "isNew": true,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "c57131362360",
@@ -144,7 +165,10 @@
       "isNew": true,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "4627a1de0dce",
@@ -162,7 +186,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "e7b1bb153b50",
@@ -180,7 +207,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "fb74b1fbad10",
@@ -198,7 +228,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "535fca112ac9",
@@ -216,7 +249,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "b5cd22a2c824",
@@ -234,7 +270,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "3f8f30fa4e4c",
@@ -252,7 +291,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "be232bb36fd4",
@@ -270,7 +312,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "d368a68b5000",
@@ -288,7 +333,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "257f9d5c532e",
@@ -306,7 +354,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "d77e8950e529",
@@ -324,7 +375,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "e6a96c4f81a8",
@@ -342,7 +396,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "c7f78f1f8626",
@@ -360,7 +417,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "f3e38e77ee0b",
@@ -378,7 +438,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "b977e6df0e8e",
@@ -396,7 +459,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "b28138a57a4c",
@@ -414,7 +480,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "d2b5b7c5eff8",
@@ -432,7 +501,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "f97f89c71c7f",
@@ -450,7 +522,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "1cd961a4c2bb",
@@ -468,7 +543,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "aad1ba3f539c",
@@ -486,7 +564,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     },
     {
       "id": "9d95894b77f3",
@@ -504,7 +585,10 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": ""
+      "comment": "",
+      "queued": false,
+      "queuedDate": null,
+      "resumeUrl": ""
     }
   ]
 }
