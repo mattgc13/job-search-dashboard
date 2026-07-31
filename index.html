@@ -111,7 +111,42 @@
   .chip[data-fit="2"].active{background:var(--gray);}
   .chip:not(.active):hover{border-color:var(--accent);}
 
+  .view-toggle{display:flex; gap:4px; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:3px;}
+  .view-toggle button{
+    display:flex; align-items:center; justify-content:center; gap:5px;
+    padding:6px 11px; border-radius:7px; border:none; background:transparent; color:var(--text-dim);
+    font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; transition: all .15s ease;
+  }
+  .view-toggle button.active{background:var(--card); color:var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3);}
+  .view-toggle button:hover:not(.active){color:var(--text);}
+
   .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); gap:16px;}
+  .grid.list-mode{display:flex; flex-direction:column; gap:8px;}
+
+  .list-item{display:flex; flex-direction:column;}
+  .list-row{
+    display:flex; align-items:center; gap:16px; padding:12px 16px; cursor:pointer;
+    background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
+    transition: border-color .15s ease;
+  }
+  .list-row:hover{border-color: rgba(124,140,255,0.4);}
+  .list-row.applied{border-color: rgba(52,211,153,0.45);}
+  .list-fit{
+    flex-shrink:0; width:32px;height:32px;border-radius:9px; display:flex;align-items:center;justify-content:center;
+    font-weight:800; font-size:14px; color:#0b0d14;
+  }
+  .list-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:3px;}
+  .list-title-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .list-title{font-size:14px; font-weight:700;}
+  .list-company{font-size:12.5px; color:var(--text-dim); font-weight:500;}
+  .list-meta{font-size:11.5px; color:var(--text-dim); display:flex; gap:10px; flex-wrap:wrap;}
+  .list-actions{display:flex; gap:8px; flex-shrink:0; align-items:center;}
+  .list-details{
+    display:none; padding:16px 16px 18px 64px; margin:-4px 0 0 0;
+    background: var(--card); border:1px solid var(--border); border-top:none;
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .list-details.open{display:block;}
 
   .card{
     background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
@@ -263,8 +298,18 @@
       <option value="company-asc">Company A–Z</option>
     </select>
     <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);cursor:pointer;">
-      <input type="checkbox" id="hideNotFit" style="cursor:pointer;" /> Hide "not a fit"
+      <input type="checkbox" id="hideNotFit" style="cursor:pointer;" checked /> Hide "not a fit"
     </label>
+    <div class="view-toggle" id="viewToggle">
+      <button type="button" data-view="tiles" title="Tile view">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+        Tiles
+      </button>
+      <button type="button" data-view="list" title="List view">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        List
+      </button>
+    </div>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -320,6 +365,7 @@
   let jobsData = null;   // full payload {lastUpdated, mostRecentBatchDate, jobs:[]}
   let fileSha = null;    // current sha of jobs.json on GitHub (for safe writes)
   let activeFits = new Set();
+  let viewMode = localStorage.getItem('jobDashboardView') || 'tiles';
 
   const el = (id) => document.getElementById(id);
   const grid = el('grid');
@@ -332,6 +378,18 @@
   }
 
   function fitColorClass(fit){ return String(fit); }
+
+  function timeAgo(iso){
+    if(!iso) return '';
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const mins = Math.round(diffMs/60000);
+    if(mins < 1) return 'just now';
+    if(mins < 60) return `${mins} min ago`;
+    const hrs = Math.round(mins/60);
+    if(hrs < 24) return `${hrs} hr${hrs===1?'':'s'} ago`;
+    const days = Math.round(hrs/24);
+    return `${days} day${days===1?'':'s'} ago`;
+  }
 
   function escapeHtml(s){
     return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -418,7 +476,7 @@
       <div class="stat"><div class="num">${avgFit}</div><div class="lbl">Avg Fit</div></div>
     `;
     el('lastUpdated').textContent = jobsData.lastUpdated
-      ? `Last updated ${new Date(jobsData.lastUpdated).toLocaleString()}`
+      ? `Last updated ${new Date(jobsData.lastUpdated).toLocaleString()} (${timeAgo(jobsData.lastUpdated)})`
       : 'No data yet';
   }
 
@@ -499,39 +557,110 @@
     </div>`;
   }
 
+  function listRowHtml(job){
+    const detailsId = `details-${job.id}`;
+    const statusLabel = (job.status||'New').replace(' (ignore)','');
+    return `
+    <div class="list-item" data-id="${job.id}">
+      <div class="list-row ${job.applied ? 'applied' : ''}" data-action="toggle-details" data-target="${detailsId}">
+        <div class="list-fit" data-fit="${job.fitScore}">${job.fitScore ?? '–'}</div>
+        <div class="list-main">
+          <div class="list-title-row">
+            <span class="list-title">${escapeHtml(job.title)}</span>
+            <span class="list-company">${escapeHtml(job.company)}</span>
+            ${job.isNew ? '<span class="badge new">New</span>' : ''}
+            ${job.applied ? '<span class="badge applied">Applied</span>' : ''}
+            <span class="badge ${statusClass(job.status)}">${escapeHtml(statusLabel)}</span>
+          </div>
+          <div class="list-meta">
+            <span>📍 ${escapeHtml(job.location||'—')}</span>
+            <span>💼 ${escapeHtml(job.workType||'—')}</span>
+            <span>💰 ${escapeHtml(job.salary||'Not listed')}</span>
+            <span>🔎 ${escapeHtml(job.source||'—')}</span>
+            <span>🗓 ${escapeHtml(job.dateFound||'—')}</span>
+          </div>
+        </div>
+        <div class="list-actions">
+          <a class="btn primary" href="${job.link||'#'}" target="_blank" rel="noopener">View ↗</a>
+          <button class="btn applied-btn ${job.applied ? 'on' : ''}" data-action="toggle-applied">${job.applied ? '✓ Applied' : 'Mark Applied'}</button>
+        </div>
+      </div>
+      <div class="list-details" id="${detailsId}">
+        <div class="fit-notes" style="max-height:none;">${escapeHtml(job.fitNotes||'')}</div>
+        <div class="comment-box">
+          <textarea placeholder="Your notes on this one…" data-action="comment-input">${escapeHtml(job.comment||'')}</textarea>
+          <div class="comment-save-row">
+            <span class="save-hint" data-role="save-hint"></span>
+            <button class="btn" data-action="save-comment">Save note</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
   function render(){
     computeStats();
     const jobs = getFiltered();
     el('emptyState').style.display = jobs.length ? 'none' : 'block';
-    grid.innerHTML = jobs.map(cardHtml).join('');
+    grid.classList.toggle('list-mode', viewMode === 'list');
+    grid.innerHTML = jobs.map(viewMode === 'list' ? listRowHtml : cardHtml).join('');
   }
 
-  // Expand/collapse notes
+  // Clicks within the grid (tile cards or list rows)
   grid.addEventListener('click', (e)=>{
+    // Expand/collapse fit notes (tiles view)
     if(e.target.classList.contains('fit-notes-toggle')){
       const t = document.getElementById(e.target.dataset.target);
       const expanded = t.classList.toggle('expanded');
       e.target.textContent = expanded ? 'Show less' : 'Show more';
+      return;
     }
-    const card = e.target.closest('.card');
-    if(!card) return;
-    const id = card.dataset.id;
+
+    const action = e.target.dataset.action;
+    const container = e.target.closest('.card') || e.target.closest('.list-item');
+    if(!container) return;
+    const id = container.dataset.id;
     const job = (jobsData.jobs||[]).find(j=>j.id===id);
     if(!job) return;
 
-    if(e.target.dataset.action === 'toggle-applied'){
+    if(action === 'toggle-applied'){
       job.applied = !job.applied;
       job.appliedDate = job.applied ? new Date().toISOString().slice(0,10) : null;
       if(job.applied && (job.status === 'New' || !job.status)) job.status = 'Applied';
       render();
       persist(job.applied ? `Marked applied: ${job.title}` : `Un-marked: ${job.title}`);
+      return;
     }
-    if(e.target.dataset.action === 'save-comment'){
-      const ta = card.querySelector('textarea[data-action="comment-input"]');
+    if(action === 'save-comment'){
+      const ta = container.querySelector('textarea[data-action="comment-input"]');
       job.comment = ta.value;
       persist(`Saved note on ${job.title}`);
+      return;
+    }
+
+    // List-view: clicking the row itself (not a button/link) expands the details panel
+    const rowToggle = e.target.closest('[data-action="toggle-details"]');
+    if(rowToggle && !e.target.closest('a') && !e.target.closest('button')){
+      const target = document.getElementById(rowToggle.dataset.target);
+      if(target) target.classList.toggle('open');
     }
   });
+
+  // View toggle (Tiles / List)
+  function updateViewToggleUI(){
+    document.querySelectorAll('#viewToggle button').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.view === viewMode);
+    });
+  }
+  el('viewToggle').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-view]');
+    if(!btn) return;
+    viewMode = btn.dataset.view;
+    localStorage.setItem('jobDashboardView', viewMode);
+    updateViewToggleUI();
+    render();
+  });
+  updateViewToggleUI();
 
   el('searchInput').addEventListener('input', render);
   el('statusFilter').addEventListener('change', render);
