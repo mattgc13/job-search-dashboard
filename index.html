@@ -160,6 +160,8 @@
   }
   .card:hover{border-color: rgba(124,140,255,0.4);}
   .card.applied{border-color: rgba(52,211,153,0.45);}
+  .card.queued{border-color: rgba(167,139,250,0.5);}
+  .list-row.queued{border-color: rgba(167,139,250,0.5);}
   .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
   .fit-badge{
     flex-shrink:0; width:40px;height:40px;border-radius:11px; display:flex;align-items:center;justify-content:center;
@@ -181,6 +183,8 @@
   }
   .badge.new{background: rgba(124,140,255,0.18); color: var(--accent);}
   .badge.applied{background: var(--green-bg); color: var(--green);}
+  .badge.queued{background: rgba(167,139,250,0.16); color: var(--accent-2);}
+  .badge.resume-ready{background: rgba(167,139,250,0.16); color: var(--accent-2);}
   .badge.status-New{background: rgba(124,140,255,0.12); color: var(--text-dim);}
   .badge.status-Interviewing{background: var(--yellow-bg); color: var(--yellow);}
   .badge.status-Rejected{background: rgba(248,113,113,0.14); color: var(--red);}
@@ -205,6 +209,11 @@
   .btn.primary{background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent; color:#0b0d14;}
   .btn.primary:hover{filter:brightness(1.08); color:#0b0d14;}
   .btn.applied-btn.on{background: var(--green-bg); border-color: rgba(52,211,153,0.4); color:var(--green);}
+  .btn.queue-btn.on{background: rgba(167,139,250,0.16); border-color: rgba(167,139,250,0.5); color:var(--accent-2);}
+  .btn.resume-btn{background: rgba(167,139,250,0.16); border-color: rgba(167,139,250,0.5); color:var(--accent-2);}
+  .btn.resume-btn:hover{color:var(--accent-2); filter:brightness(1.15);}
+  .btn.resume-pending{opacity:0.55; cursor:default;}
+  .btn.resume-pending:hover{border-color:var(--border); color:var(--text);}
 
   .comment-box{margin-top:2px;}
   textarea{
@@ -303,6 +312,9 @@
     </select>
     <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);cursor:pointer;">
       <input type="checkbox" id="hideNotFit" style="cursor:pointer;" checked /> Hide "not a fit"
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);cursor:pointer;">
+      <input type="checkbox" id="queueOnly" style="cursor:pointer;" /> Queue only
     </label>
     <div class="view-toggle" id="viewToggle">
       <button type="button" data-view="tiles" title="Tile view">
@@ -472,10 +484,12 @@
     const total = jobs.length;
     const newCount = jobs.filter(j=>j.isNew).length;
     const appliedCount = jobs.filter(j=>j.applied).length;
+    const queuedCount = jobs.filter(j=>j.queued).length;
     const avgFit = total ? (jobs.reduce((s,j)=>s+(Number(j.fitScore)||0),0)/total).toFixed(1) : '0';
     el('stats').innerHTML = `
       <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
       <div class="stat"><div class="num">${newCount}</div><div class="lbl">New</div></div>
+      <div class="stat"><div class="num">${queuedCount}</div><div class="lbl">Queued</div></div>
       <div class="stat"><div class="num">${appliedCount}</div><div class="lbl">Applied</div></div>
       <div class="stat"><div class="num">${avgFit}</div><div class="lbl">Avg Fit</div></div>
     `;
@@ -490,6 +504,7 @@
     const statusF = el('statusFilter').value;
     const workF = el('workTypeFilter').value;
     const hideNotFit = el('hideNotFit').checked;
+    const queueOnly = el('queueOnly').checked;
     const sort = el('sortSelect').value;
 
     if(q){
@@ -504,6 +519,7 @@
     if(statusF){ jobs = jobs.filter(j => (j.status||'') === statusF); }
     if(workF){ jobs = jobs.filter(j => (j.workType||'') === workF); }
     if(hideNotFit){ jobs = jobs.filter(j => !(j.status||'').toLowerCase().includes('not a fit')); }
+    if(queueOnly){ jobs = jobs.filter(j => j.queued); }
 
     jobs.sort((a,b)=>{
       if(sort === 'fit-desc'){
@@ -519,11 +535,21 @@
     return jobs;
   }
 
+  function resumeButtonHtml(job){
+    if(job.resumeUrl){
+      return `<a class="btn resume-btn" href="${job.resumeUrl}" target="_blank" rel="noopener">📄 Resume ↗</a>`;
+    }
+    if(job.queued){
+      return `<button class="btn resume-pending" disabled title="Generated during tonight's run">📄 Resume pending…</button>`;
+    }
+    return '';
+  }
+
   function cardHtml(job){
     const notesId = `notes-${job.id}`;
     const statusLabel = (job.status||'New').replace(' (ignore)','');
     return `
-    <div class="card ${job.applied ? 'applied' : ''}" data-id="${job.id}">
+    <div class="card ${job.applied ? 'applied' : ''} ${job.queued ? 'queued' : ''}" data-id="${job.id}">
       <div class="card-top">
         <div class="fit-badge" data-fit="${job.fitScore}">${job.fitScore ?? '–'}</div>
         <div class="titles">
@@ -533,7 +559,9 @@
       </div>
       <div class="badges">
         ${job.isNew ? '<span class="badge new">New</span>' : ''}
+        ${job.queued ? '<span class="badge queued">Queued</span>' : ''}
         ${job.applied ? '<span class="badge applied">Applied</span>' : ''}
+        ${job.resumeUrl ? '<span class="badge resume-ready">Resume ready</span>' : ''}
         <span class="badge ${statusClass(job.status)}">${escapeHtml(statusLabel)}</span>
       </div>
       <div class="meta-line">
@@ -550,6 +578,8 @@
       <div class="card-actions">
         <a class="btn primary" href="${job.link||'#'}" target="_blank" rel="noopener">View Posting ↗</a>
         <button class="btn applied-btn ${job.applied ? 'on' : ''}" data-action="toggle-applied">${job.applied ? '✓ Applied' : 'Mark Applied'}</button>
+        <button class="btn queue-btn ${job.queued ? 'on' : ''}" data-action="toggle-queue">${job.queued ? '📌 Queued' : 'Queue to Apply'}</button>
+        ${resumeButtonHtml(job)}
       </div>
       <div class="comment-box">
         <textarea placeholder="Your notes on this one…" data-action="comment-input">${escapeHtml(job.comment||'')}</textarea>
@@ -566,14 +596,16 @@
     const statusLabel = (job.status||'New').replace(' (ignore)','');
     return `
     <div class="list-item" data-id="${job.id}">
-      <div class="list-row ${job.applied ? 'applied' : ''}" data-action="toggle-details" data-target="${detailsId}">
+      <div class="list-row ${job.applied ? 'applied' : ''} ${job.queued ? 'queued' : ''}" data-action="toggle-details" data-target="${detailsId}">
         <div class="list-fit" data-fit="${job.fitScore}">${job.fitScore ?? '–'}</div>
         <div class="list-main">
           <div class="list-title-row">
             <span class="list-title">${escapeHtml(job.title)}</span>
             <span class="list-company">${escapeHtml(job.company)}</span>
             ${job.isNew ? '<span class="badge new">New</span>' : ''}
+            ${job.queued ? '<span class="badge queued">Queued</span>' : ''}
             ${job.applied ? '<span class="badge applied">Applied</span>' : ''}
+            ${job.resumeUrl ? '<span class="badge resume-ready">Resume ready</span>' : ''}
             <span class="badge ${statusClass(job.status)}">${escapeHtml(statusLabel)}</span>
           </div>
           <div class="list-meta">
@@ -587,6 +619,8 @@
         <div class="list-actions">
           <a class="btn primary" href="${job.link||'#'}" target="_blank" rel="noopener">View ↗</a>
           <button class="btn applied-btn ${job.applied ? 'on' : ''}" data-action="toggle-applied">${job.applied ? '✓ Applied' : 'Mark Applied'}</button>
+          <button class="btn queue-btn ${job.queued ? 'on' : ''}" data-action="toggle-queue">${job.queued ? '📌 Queued' : 'Queue'}</button>
+          ${resumeButtonHtml(job)}
         </div>
       </div>
       <div class="list-details" id="${detailsId}">
@@ -639,6 +673,14 @@
       const ta = container.querySelector('textarea[data-action="comment-input"]');
       job.comment = ta.value;
       persist(`Saved note on ${job.title}`);
+      return;
+    }
+    if(action === 'toggle-queue'){
+      job.queued = !job.queued;
+      job.queuedDate = job.queued ? new Date().toISOString().slice(0,10) : null;
+      if(!job.queued){ job.resumeUrl = job.resumeUrl || ''; } // leave any existing resume link intact even if un-queued
+      render();
+      persist(job.queued ? `Queued: ${job.title} — tailored resume will be ready after tonight's run` : `Removed from queue: ${job.title}`);
       return;
     }
 
