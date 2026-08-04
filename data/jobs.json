@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-04T04:13:39.352Z",
+  "lastUpdated": "2026-08-04T04:13:47.685Z",
   "mostRecentBatchDate": "2026-08-03",
   "jobs": [
     {
@@ -313,8 +313,8 @@
       "applied": false,
       "appliedDate": null,
       "comment": "I like this one alot. Seems like I fit this well for the most part. The pay range is very wide though. I definitely should be able to get a secret clearance if needed.",
-      "queued": false,
-      "queuedDate": null,
+      "queued": true,
+      "queuedDate": "2026-08-04",
       "resumeUrl": ""
     },
     {
