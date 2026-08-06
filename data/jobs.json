@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-06T02:23:37.989Z",
+  "lastUpdated": "2026-08-06T02:23:54.790Z",
   "mostRecentBatchDate": "2026-08-05",
   "jobs": [
     {
@@ -145,8 +145,8 @@
       "applied": false,
       "appliedDate": null,
       "comment": "",
-      "queued": false,
-      "queuedDate": null,
+      "queued": true,
+      "queuedDate": "2026-08-06",
       "resumeUrl": ""
     },
     {
