@@ -672,6 +672,7 @@
     if(action === 'save-comment'){
       const ta = container.querySelector('textarea[data-action="comment-input"]');
       job.comment = ta.value;
+      render();
       persist(`Saved note on ${job.title}`);
       return;
     }
@@ -713,6 +714,7 @@
   el('workTypeFilter').addEventListener('change', render);
   el('sortSelect').addEventListener('change', render);
   el('hideNotFit').addEventListener('change', render);
+  el('queueOnly').addEventListener('change', render);
 
   el('fitChips').addEventListener('click', (e)=>{
     const chip = e.target.closest('.chip');
