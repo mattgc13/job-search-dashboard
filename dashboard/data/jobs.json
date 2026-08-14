@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-14T05:26:47Z",
+  "lastUpdated": "2026-08-14T05:58:59.578Z",
   "mostRecentBatchDate": "2026-08-13",
   "jobs": [
     {
@@ -60,7 +60,7 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": "",
+      "comment": "this posting link doesnt work",
       "queued": true,
       "queuedDate": "2026-08-06",
       "resumeUrl": "https://drive.google.com/file/d/13yxfrl2CUWsZZBjW01TIHVSLDr0HvkXA/view?usp=drivesdk"
