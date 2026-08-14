@@ -382,7 +382,7 @@
     </div>
     <div class="field">
       <label>Data file path</label>
-      <input type="text" id="cfgPath" placeholder="data/jobs.json" />
+      <input type="text" id="cfgPath" placeholder="dashboard/data/jobs.json" />
     </div>
     <div class="field">
       <label>Personal access token</label>
@@ -398,7 +398,7 @@
 
 <script>
 (function(){
-  const DEFAULTS = { owner:'', repo:'', branch:'main', path:'data/jobs.json' };
+  const DEFAULTS = { owner:'', repo:'', branch:'main', path:'dashboard/data/jobs.json' };
   const LS_KEY = 'jobDashboardConfig';
 
   function loadConfig(){
@@ -486,7 +486,7 @@
     }
     // fallback: relative fetch (works when hosted, read-only)
     try{
-      const res = await fetch('./data/jobs.json', {cache:'no-store'});
+      const res = await fetch('./dashboard/data/jobs.json', {cache:'no-store'});
       jobsData = await res.json();
     }catch(e){
       jobsData = { lastUpdated: null, mostRecentBatchDate: null, jobs: [] };
@@ -841,7 +841,7 @@
     el('cfgOwner').value = config.owner || '';
     el('cfgRepo').value = config.repo || '';
     el('cfgBranch').value = config.branch || 'main';
-    el('cfgPath').value = config.path || 'data/jobs.json';
+    el('cfgPath').value = config.path || 'dashboard/data/jobs.json';
     el('cfgToken').value = config.token || '';
     el('settingsMsg').textContent = '';
     el('settingsMsg').className = 'status-msg';
@@ -857,7 +857,7 @@
       owner: el('cfgOwner').value.trim(),
       repo: el('cfgRepo').value.trim(),
       branch: el('cfgBranch').value.trim() || 'main',
-      path: el('cfgPath').value.trim() || 'data/jobs.json',
+      path: el('cfgPath').value.trim() || 'dashboard/data/jobs.json',
       token: el('cfgToken').value.trim()
     };
     saveConfig(config);
