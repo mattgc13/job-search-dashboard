@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-14T05:58:59.578Z",
+  "lastUpdated": "2026-08-14T06:01:14.143Z",
   "mostRecentBatchDate": "2026-08-13",
   "jobs": [
     {
@@ -39,7 +39,7 @@
       "isNew": false,
       "applied": false,
       "appliedDate": null,
-      "comment": "",
+      "comment": "the intro paragraph on the resume seems a little bit overexaggerated. What do you honestly think? Change this if you think it needs to.",
       "queued": true,
       "queuedDate": "2026-08-06",
       "resumeUrl": "https://drive.google.com/file/d/1wGVsS084R13t36ONoBP8i-YJNl8LR14r/view?usp=drivesdk"
